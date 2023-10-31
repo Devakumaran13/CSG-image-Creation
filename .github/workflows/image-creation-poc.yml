@@ -23,6 +23,7 @@ jobs:
       if: ${{contains(vars.job_switches, 'validate') }} 
       name: Validate Inputs
       runs-on: ubuntu-latest
+      steps:
         - uses: actions/checkout@v1
         - name: Script using  repo variable
           run: packer validate -syntax-only .
