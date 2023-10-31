@@ -1,0 +1,40 @@
+name: Package Image creator
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+
+jobs:
+    # This job is to validate all the input values used in workflow.
+    Inputs-Validate:
+      name: Input Validate
+      runs-on: ubuntu-latest
+      environment: AZURE_CRED
+      steps:
+        - uses: actions/checkout@v1
+        - name: Script using  repo variable
+          run: packer validate -syntax-only packer-file.json
+          
+      # This job is to setup and run packer to create managed image.       
+    Setup-Run-Packer:
+      runs-on: ubuntu-latest
+      environment: AZURE_CRED
+      steps:
+        - name: Set up Azure CLI
+          uses: azure/login@v1
+          with:
+             creds: ${{ secrets.AZURE_CREDENTIALS }}
+  
+        - name: Packer Image
+          run: packer build -var-file="variables.pkrvars.hcl" VariablewithImage.pkr.hcl
+
+    # This job is to do post validation on the image created as part of packer.  
+    Post-Validation:
+        runs-on: ubuntu-latest
+        steps:
+        - name: Testing Image Validation Script
+          run: |
+           echo "Image Validation Script on environment"
