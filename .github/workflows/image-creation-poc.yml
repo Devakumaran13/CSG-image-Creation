@@ -3,9 +3,9 @@ name: Package Image Creation
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "validations" ]
+    branches: [ "image-creation" ]
   pull_request:
-    branches: [ "validations" ]
+    branches: [ "image-creation" ]
 
 # This block is used to setup global environment variables shared across enitre workflow
 env:
