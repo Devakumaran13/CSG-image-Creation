@@ -40,7 +40,7 @@ source "azure-arm" "AzureImage" {
   winrm_timeout                     = "5m"
   winrm_use_ssl                     = true
   winrm_username                    = "packer"
-  winrm_password                    = "P@ssw0rd!"
+  winrm_password                    = var.passwd
 
     azure_tags = {
     dept = "Test"
