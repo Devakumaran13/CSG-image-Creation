@@ -1,3 +1,13 @@
+packer {
+  required_plugins {
+    azure = {
+      source  = "github.com/hashicorp/azure"
+      version = "~> 2"
+    }
+  }
+}
+
+
 variable "azure_tenant_id" {}
 variable "azure_subscription_id" {}
 variable "azure_client_id" {}
