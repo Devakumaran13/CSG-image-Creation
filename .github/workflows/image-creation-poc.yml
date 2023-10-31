@@ -1,29 +1,76 @@
-name: Package Image creator
+# This is the name of workflow
+name: Package Image Creation
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "image-creation" ]
+    branches: [ "validations" ]
   pull_request:
-    branches: [ "image-creation" ]
+    branches: [ "validations" ]
 
+# This block is used to setup global environment variables shared across enitre workflow
+env:
+ #env_var: ${{ vars.MESSAGE_REPO }}
+ client_id: ${{ secrets.AZURE_CLIENT_ID }}
+ client_secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+ tenent_id: ${{ secrets.AZURE_TENANT_ID }}
+ subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+ #sample_secret_ID: ${{ fromJSON(secrets.AZURE_CRED)['clientId'] }}
+ 
+# Jobs are listed to be run of GitHub runners-111. 
 jobs:
     # This job is to validate all the input values used in workflow.
-    Image_creation:
+    Validate-Inputs:
+      if: ${{contains(vars.job_switches, 'validate') }} 
+      name: Validate Inputs
+      runs-on: ubuntu-latest
+        - uses: actions/checkout@v1
+        - name: Script using  repo variable
+          run: packer validate -syntax-only .
+          
+      # This job is to setup and run packer to create managed image.       
+    Setup-Run-Packer:
+      if: ${{contains(vars.job_switches, 'packer') }} 
+      needs: Validate-Inputs
+      name: Run packer
       runs-on: ubuntu-latest
       environment: CSG_CRED
       steps:
         - uses: actions/checkout@v1
-        - name: Script using  repo variable
-          run: packer validate -syntax-only .
         - name: Set up Azure CLI
           uses: azure/login@v1
           with:
              creds: ${{ secrets.CSG_AZURE_CRD }}
   
         - name: Packer Image
+          
           run: |
             packer plugins install github.com/hashicorp/azure
             packer build -var-file="variables.pkrvars.hcl" image-creation.pkr.hcl
 
-            
+    # This job is to do post validation on the image created as part of packer.  
+    Post-Validation:
+      if: ${{contains(vars.job_switches, 'postvalidation') }} 
+      needs: Setup-Run-Packer
+      name: Validate Image
+      runs-on: ubuntu-latest
+      
+      steps:
+        - name: Testing Image Validation Script
+          run: |
+           echo "Image Validation Script on environment"
+
+    # This job is to publish the image in the Azure compute gallery.  
+    Publish-image:
+      if: ${{contains(vars.job_switches, 'skip') }} 
+      needs:
+      - Post-Validation
+      name: Publish Image
+      runs-on: ubuntu-latest
+      environment: development
+      steps:
+        - name: Testing Image Publish Script
+          run: |
+           echo "Image Publish Script on environment : $env_var"
     
+     
+   
