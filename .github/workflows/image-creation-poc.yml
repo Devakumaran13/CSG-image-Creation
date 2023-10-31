@@ -19,17 +19,20 @@ jobs:
           run: packer validate -syntax-only .
           
       # This job is to setup and run packer to create managed image.       
-    Setup-Run-Packer:
-      runs-on: ubuntu-latest
-      environment: CSG_CRED
-      steps:
-        - uses: actions/checkout@v1
+ #   Setup-Run-Packer:
+  #    runs-on: ubuntu-latest
+   #   environment: CSG_CRED
+    #  steps:
+     #   - uses: actions/checkout@v1
         - name: Set up Azure CLI
           uses: azure/login@v1
           with:
              creds: ${{ secrets.CSG_AZURE_CRD }}
   
         - name: Packer Image
-          run: packer build -var-file="variables.pkrvars.hcl" image-creation.pkr.hcl
+          
+          run: |
+            packer plugins install github.com/hashicorp/azure
+            packer build -var-file="variables.pkrvars.hcl" image-creation.pkr.hcl
 
     
