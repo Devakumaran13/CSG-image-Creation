@@ -21,20 +21,14 @@ jobs:
       # This job is to setup and run packer to create managed image.       
     Setup-Run-Packer:
       runs-on: ubuntu-latest
-      environment: AZURE_CRED
+      environment: CSG_CRED
       steps:
         - name: Set up Azure CLI
           uses: azure/login@v1
           with:
-             creds: ${{ secrets.AZURE_CREDENTIALS }}
+             creds: ${{ secrets.CSG_AZURE_CRD }}
   
         - name: Packer Image
-          run: packer build -var-file="variables.hcl" image-creation.hcl
+          run: packer build -var-file="variables.pkrvars.hcl" image-creation.pkr.hcl
 
-    # This job is to do post validation on the image created as part of packer.  
-    Post-Validation:
-        runs-on: ubuntu-latest
-        steps:
-        - name: Testing Image Validation Script
-          run: |
-           echo "Image Validation Script on environment"
+    
