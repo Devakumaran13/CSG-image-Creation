@@ -43,7 +43,6 @@ jobs:
              creds: ${{ secrets.CSG_AZURE_CRD }}
   
         - name: Packer Image
-          
           run: |
             packer plugins install github.com/hashicorp/azure
             packer build -var-file="variables.pkrvars.hcl" image-creation.pkr.hcl
