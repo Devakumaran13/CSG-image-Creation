@@ -16,7 +16,7 @@ jobs:
       steps:
         - uses: actions/checkout@v1
         - name: Script using  repo variable
-          run: packer validate -syntax-only packer-file.json
+          run: packer validate -syntax-only image-creation.hcl
           
       # This job is to setup and run packer to create managed image.       
     Setup-Run-Packer:
@@ -29,7 +29,7 @@ jobs:
              creds: ${{ secrets.AZURE_CREDENTIALS }}
   
         - name: Packer Image
-          run: packer build -var-file="variables.pkrvars.hcl" VariablewithImage.pkr.hcl
+          run: packer build -var-file="variables.hcl" image-creation.hcl
 
     # This job is to do post validation on the image created as part of packer.  
     Post-Validation:
