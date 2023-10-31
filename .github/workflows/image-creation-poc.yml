@@ -6,11 +6,9 @@ on:
   pull_request:
     branches: [ "image-creation" ]
 
-
 jobs:
     # This job is to validate all the input values used in workflow.
-    Inputs-Validate:
-      name: Input Validate
+    Image_creation:
       runs-on: ubuntu-latest
       environment: CSG_CRED
       steps:
